@@ -55,11 +55,14 @@ require 'includes/header.php';
                     if ($ch['pyq_done']) $subjectCompletedCheckboxes++;
                 }
 
-                $totalOverallTasks += $subjectTotalCheckboxes;
-                $completedOverallTasks += $subjectCompletedCheckboxes;
+                $totalOverallTasks += $subjectTotalCheckboxes + $subjectTotalVideos;
+                $completedOverallTasks += $subjectCompletedCheckboxes + $subjectCompletedVideos;
 
                 $remainingVideos = $subjectTotalVideos - $subjectCompletedVideos;
-                $vidProgressPerc = $subjectTotalVideos > 0 ? round(($subjectCompletedVideos / $subjectTotalVideos) * 100) : 0;
+                
+                $subjectTotal = $subjectTotalCheckboxes + $subjectTotalVideos;
+                $subjectCompleted = $subjectCompletedCheckboxes + $subjectCompletedVideos;
+                $subjectOverallPerc = $subjectTotal > 0 ? round(($subjectCompleted / $subjectTotal) * 100) : 0;
                 ?>
 
                 <!-- Subject Summary Card -->
@@ -83,11 +86,11 @@ require 'includes/header.php';
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <small class="fw-bold">Video Progress</small>
-                                <small class="text-muted"><?= $vidProgressPerc ?>%</small>
+                                <small class="fw-bold">Overall Progress</small>
+                                <small class="text-muted"><?= $subjectOverallPerc ?>%</small>
                             </div>
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar <?= str_replace('bg-', 'bg-', $color) ?>" role="progressbar" style="width: <?= $vidProgressPerc ?>%;" aria-valuenow="<?= $vidProgressPerc ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar <?= str_replace('bg-', 'bg-', $color) ?>" role="progressbar" style="width: <?= $subjectOverallPerc ?>%;" aria-valuenow="<?= $subjectOverallPerc ?>" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                     </div>

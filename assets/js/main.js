@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 countSpan.innerText = completedVideos;
             }
 
+            calculateProgress();
+
             fetch('update_videos.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -60,10 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function calculateProgress() {
-        let totalBoxes = document.querySelectorAll('.tracker-check').length;
+        let totalBoxes = document.querySelectorAll('.tracker-check, .video-checkbox').length;
         
         if (totalBoxes > 0) {
-            let totalChecked = document.querySelectorAll('.tracker-check:checked').length;
+            let totalChecked = document.querySelectorAll('.tracker-check:checked, .video-checkbox:checked').length;
             let overallPerc = Math.round((totalChecked / totalBoxes) * 100);
             const overallBar = document.getElementById('overallProgress');
             if (overallBar) {
@@ -72,12 +74,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             document.querySelectorAll('.card').forEach(card => {
-                let subBoxes = card.querySelectorAll('.tracker-check').length;
-                let subChecked = card.querySelectorAll('.tracker-check:checked').length;
+                let subBoxes = card.querySelectorAll('.tracker-check, .video-checkbox').length;
+                let subChecked = card.querySelectorAll('.tracker-check:checked, .video-checkbox:checked').length;
                 let subPerc = subBoxes === 0 ? 0 : Math.round((subChecked / subBoxes) * 100);
 
                 let progressText = card.querySelector('.progress-text');
                 if (progressText) progressText.innerText = `${subPerc}% Completed`;
+                
+                let progressBar = card.querySelector('.subject-progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = `${subPerc}%`;
+                    progressBar.setAttribute('aria-valuenow', subPerc);
+                }
             });
         }
     }

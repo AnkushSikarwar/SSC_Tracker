@@ -47,6 +47,9 @@ require 'includes/header.php';
                     </button>
                 </div>
             </div>
+            <div class="progress" style="height: 8px; border-radius: 0;">
+                <div class="progress-bar bg-success subject-progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
             <div class="card-body p-0">
                 <?php if (empty($chapters)): ?>
                     <div class="p-4 text-center">
