@@ -11,6 +11,17 @@ $pageTitle = 'Dashboard';
 require 'includes/header.php';
 ?>
 
+        <!-- Share Link Alert -->
+        <div class="alert alert-info d-flex align-items-center justify-content-between mb-4 shadow-sm" role="alert">
+            <div>
+                <i class="bi bi-link-45deg fs-4 me-2"></i>
+                <span><strong>Access Anywhere:</strong> Use this link from any device: <a href="https://ssctracker.infinityfreeapp.com/index.php" target="_blank" class="alert-link" id="shareLinkUrl">https://ssctracker.infinityfreeapp.com/index.php</a></span>
+            </div>
+            <button class="btn btn-sm btn-outline-info ms-3 text-nowrap" onclick="copyShareLink()" id="copyLinkBtn">
+                <i class="bi bi-copy"></i> Copy Link
+            </button>
+        </div>
+
         <!-- Hero Section: Overall Progress -->
         <div class="p-4 mb-4 bg-light rounded-3 border shadow-sm text-center">
             <h2>Target: GST Inspector 🎯</h2>
@@ -111,6 +122,25 @@ require 'includes/header.php';
                 overallBar.innerText = '<?= $overallPerc ?>%';
             }
         });
+
+        function copyShareLink() {
+            const link = document.getElementById('shareLinkUrl').href;
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = document.getElementById('copyLinkBtn');
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+                btn.classList.replace('btn-outline-info', 'btn-info');
+                btn.classList.add('text-white');
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.replace('btn-info', 'btn-outline-info');
+                    btn.classList.remove('text-white');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert("Failed to copy link. Please select and copy manually.");
+            });
+        }
     </script>
 
 <?php require 'includes/footer.php'; ?>
