@@ -27,81 +27,52 @@ $chapStmt = $pdo->prepare("SELECT * FROM chapters WHERE subject_id = ?");
 $chapStmt->execute([$subId]);
 $chapters = $chapStmt->fetchAll(PDO::FETCH_ASSOC);
 
+$pageTitle = htmlspecialchars($subject['name']);
+require 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($subject['name']) ?> - SSC Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body {
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .progress {
-            height: 25px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.php"><i class="bi bi-bullseye"></i> SSC Tracker</a>
-            <div class="ms-auto d-flex align-items-center">
-                <span class="text-light me-3">Hi, <?= htmlspecialchars($_SESSION['username']) ?>!</span>
-                <button class="btn btn-outline-light me-2" id="themeToggle"><i class="bi bi-moon"></i></button>
-                <a href="logout.php" class="btn btn-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-4">
-        <div class="mb-3">
-            <a href="index.php" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+        <div class="mb-3 d-flex align-items-center">
+            <a href="index.php" class="btn btn-outline-secondary btn-sm me-3"><i class="bi bi-arrow-left"></i></a>
+            <h4 class="mb-0 text-muted">Chapters</h4>
         </div>
 
         <!-- Subject Card -->
         <div class="card shadow-sm mb-4">
             <div class="card-header <?= $color ?> text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><?= htmlspecialchars($subject['name']) ?> Chapters</h4>
+                <h4 class="mb-0"><?= htmlspecialchars($subject['name']) ?></h4>
                 <div>
                     <span class="badge bg-light text-dark progress-text me-2" data-subject="<?= $subId ?>">0%</span>
-                    <button class="btn btn-sm btn-light py-0 px-1" title="Add Chapter" data-bs-toggle="modal" data-bs-target="#addChapterModal" data-subject-id="<?= $subId ?>" data-subject-name="<?= htmlspecialchars($subject['name']) ?>">
+                    <button class="btn btn-sm btn-light py-0 px-2 fw-bold" title="Add Chapter" data-bs-toggle="modal" data-bs-target="#addChapterModal" data-subject-id="<?= $subId ?>" data-subject-name="<?= htmlspecialchars($subject['name']) ?>">
                         <i class="bi bi-plus-circle"></i> Add Chapter
                     </button>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 <?php if (empty($chapters)): ?>
-                    <div class="alert alert-info">No chapters added yet. Click "Add Chapter" to begin.</div>
+                    <div class="p-4 text-center">
+                        <div class="alert alert-info d-inline-block">No chapters added yet. Click "Add Chapter" to begin.</div>
+                    </div>
                 <?php else: ?>
-                    <div class="accordion" id="acc-<?= $subId ?>">
+                    <div class="accordion accordion-flush" id="acc-<?= $subId ?>">
                         <?php foreach ($chapters as $index => $chapter): ?>
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#chap-<?= $chapter['id'] ?>">
                                         <?= htmlspecialchars($chapter['chapter_name']) ?>
                                     </button>
                                 </h2>
                                 <div id="chap-<?= $chapter['id'] ?>" class="accordion-collapse collapse"
                                     data-bs-parent="#acc-<?= $subId ?>">
-                                    <div class="accordion-body">
+                                    <div class="accordion-body bg-light border-top">
                                         <form class="chapter-form" data-chapter="<?= $chapter['id'] ?>">
 
                                             <!-- VIDEO TRACKER -->
-                                            <div class="p-2 mb-3 bg-light border rounded">
+                                            <div class="p-3 mb-3 bg-white border rounded shadow-sm">
                                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                                    <label class="mb-0 fw-bold">📹 Videos Watched: <span id="video-count-<?= $chapter['id'] ?>"><?= $chapter['completed_videos'] ?? 0 ?></span> / <?= $chapter['total_videos'] ?? 20 ?></label>
+                                                    <label class="mb-0 fw-bold"><i class="bi bi-camera-video text-primary"></i> Videos Watched: <span id="video-count-<?= $chapter['id'] ?>"><?= $chapter['completed_videos'] ?? 0 ?></span> / <?= $chapter['total_videos'] ?? 20 ?></label>
                                                 </div>
-                                                <div class="d-flex flex-wrap gap-2">
+                                                <div class="d-flex flex-wrap gap-2 mt-3">
                                                     <?php
                                                     $totalVids = $chapter['total_videos'] ?? 20;
                                                     $completedVidsList = [];
@@ -120,20 +91,22 @@ $chapters = $chapStmt->fetchAll(PDO::FETCH_ASSOC);
                                             </div>
 
                                             <!-- CHECKBOXES -->
-                                            <div class="form-check">
-                                                <input class="form-check-input tracker-check" type="checkbox"
-                                                    data-type="theory" <?= $chapter['theory_done'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label">Theory Concepts</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input tracker-check" type="checkbox"
-                                                    data-type="practice" <?= $chapter['practice_done'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label">Practice Questions</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input tracker-check" type="checkbox"
-                                                    data-type="pyq" <?= $chapter['pyq_done'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label">Previous Year Questions (PYQs)</label>
+                                            <div class="d-flex flex-column gap-2 p-3 bg-white border rounded shadow-sm">
+                                                <div class="form-check">
+                                                    <input class="form-check-input tracker-check" type="checkbox" id="theory-<?= $chapter['id'] ?>"
+                                                        data-type="theory" <?= $chapter['theory_done'] ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="theory-<?= $chapter['id'] ?>">Theory Concepts</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input tracker-check" type="checkbox" id="practice-<?= $chapter['id'] ?>"
+                                                        data-type="practice" <?= $chapter['practice_done'] ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="practice-<?= $chapter['id'] ?>">Practice Questions</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input tracker-check" type="checkbox" id="pyq-<?= $chapter['id'] ?>"
+                                                        data-type="pyq" <?= $chapter['pyq_done'] ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="pyq-<?= $chapter['id'] ?>">Previous Year Questions (PYQs)</label>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
@@ -144,7 +117,6 @@ $chapters = $chapStmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php endif; ?>
             </div>
         </div>
-    </div>
 
     <!-- Add Chapter Modal -->
     <div class="modal fade" id="addChapterModal" tabindex="-1" aria-labelledby="addChapterModalLabel" aria-hidden="true">
@@ -178,8 +150,6 @@ $chapters = $chapStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/main.js"></script>
     <script>
         const addChapterModal = document.getElementById('addChapterModal');
         if (addChapterModal) {
@@ -193,6 +163,5 @@ $chapters = $chapStmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
     </script>
-</body>
 
-</html>
+<?php require 'includes/footer.php'; ?>
