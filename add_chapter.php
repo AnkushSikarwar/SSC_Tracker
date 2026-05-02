@@ -16,6 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-header("Location: index.php");
+if (isset($_POST['return_to_subject']) && $_POST['return_to_subject'] == '1') {
+    header("Location: subject.php?id=" . $subject_id);
+} else {
+    header("Location: index.php");
+}
 exit;
 ?>

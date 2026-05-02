@@ -61,22 +61,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function calculateProgress() {
         let totalBoxes = document.querySelectorAll('.tracker-check').length;
-        let totalChecked = document.querySelectorAll('.tracker-check:checked').length;
+        
+        if (totalBoxes > 0) {
+            let totalChecked = document.querySelectorAll('.tracker-check:checked').length;
+            let overallPerc = Math.round((totalChecked / totalBoxes) * 100);
+            const overallBar = document.getElementById('overallProgress');
+            if (overallBar) {
+                overallBar.style.width = `${overallPerc}%`;
+                overallBar.innerText = `${overallPerc}%`;
+            }
 
-        let overallPerc = totalBoxes === 0 ? 0 : Math.round((totalChecked / totalBoxes) * 100);
-        const overallBar = document.getElementById('overallProgress');
-        if (overallBar) {
-            overallBar.style.width = `${overallPerc}%`;
-            overallBar.innerText = `${overallPerc}%`;
+            document.querySelectorAll('.card').forEach(card => {
+                let subBoxes = card.querySelectorAll('.tracker-check').length;
+                let subChecked = card.querySelectorAll('.tracker-check:checked').length;
+                let subPerc = subBoxes === 0 ? 0 : Math.round((subChecked / subBoxes) * 100);
+
+                let progressText = card.querySelector('.progress-text');
+                if (progressText) progressText.innerText = `${subPerc}% Completed`;
+            });
         }
-
-        document.querySelectorAll('.card').forEach(card => {
-            let subBoxes = card.querySelectorAll('.tracker-check').length;
-            let subChecked = card.querySelectorAll('.tracker-check:checked').length;
-            let subPerc = subBoxes === 0 ? 0 : Math.round((subChecked / subBoxes) * 100);
-
-            let progressText = card.querySelector('.progress-text');
-            if (progressText) progressText.innerText = `${subPerc}% Completed`;
-        });
     }
 });
